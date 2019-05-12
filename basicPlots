@@ -1,0 +1,24 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+%matplotlib inline
+import seaborn as sns
+print("Setup Complete")
+
+# Path of the file to read
+fifa_filepath = "../input/fifa.csv"
+
+# Read the file into a variable fifa_data
+fifa_data = pd.read_csv(fifa_filepath, index_col="Date", parse_dates=True)
+
+# fifa_filepath - The filepath for the dataset always needs to be provided first.
+# index_col="Date" - When we load the dataset, we want each entry in the first column to denote a different row. To do this, we set the value of index_col to the name of the first column ("Date", found in cell A1 of the file when it's opened in Excel).
+# parse_dates=True - This tells the notebook to understand the each row label as a date (as opposed to a number or other text with a different meaning).
+
+
+# Print the first 5 rows of the data
+fifa_data.head()
+
+# Set the width and height of the figure
+plt.figure(figsize=(16,6))
+
+sns.lineplot(data=fifa_data)
