@@ -1,0 +1,40 @@
+'importa biblioteca random'
+import random
+
+
+'definindo a semente'
+'obs: rodando o bloco abaixo mais de uma vez os resultados obtidos serão os mesmos'
+
+random.seed(3)
+random.random()
+random.random()
+
+'recomeça a semente'
+random.seed()
+random.random()
+random.random()
+
+'numero aleatorio inteiro'
+random.randint(1,9)
+
+'utilizando alias na biblioteca'
+import random as rd
+rd.random()
+
+
+
+'importa biblioteca math'
+import math
+math.factorial(10)
+math.pow(2,3)
+
+'Biblioteca Sys'
+import sys
+sys.version
+
+
+'Exercicio para calcular a area do raio'
+r = input('digite o raio: ')
+r = float(r)
+area = math.pi * r**2
+print('area: ', '%0.2f' %  area)
