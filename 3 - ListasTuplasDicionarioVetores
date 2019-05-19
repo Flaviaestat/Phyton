@@ -1,0 +1,77 @@
+'Lista vazia'
+A = []
+print(A)
+
+'Lista de numeros'
+
+A = [1,5,76,23,12]
+type(A)
+print(A)
+
+'Printar primeiro elemento da lista - começa no zero'
+print(A[0])
+
+'tamanho da lista'
+len(A)
+n = len(A)
+
+'loop'
+for i in range(n):
+print(i, A[i])
+
+'incluir um numero na lista'
+A.append(9)
+
+'limpar a lista'
+A.clear()
+
+'criando lista híbrida'
+A = [1, 5, 76, 'cachorro', 'gato']
+
+'Lista dentro de lista'
+A = [1, 5, 76, 'cachorro', 'gato', ['osso', 'bola']]
+
+'criando uma tupla'
+T = (1,34,2.3)
+
+'Dicionario'
+cachorro = {'nome': 'Robby', 'idade': 2, 'vacinado': True, 'peso': 10.2, 'pertences': ['osso','bola']}
+
+'imprimir nome e pertences'
+print(cachorro['nome'], cachorro['pertences'])
+
+'imprimmir o segundo pertence da lista do cachorro começa com zero'
+print(cachorro['pertences'][1])
+
+'vetores - ocupa menos espaço de memória - apenas números'
+'criando um vetor de zeros de tamanho 5'
+import numpy as np
+
+A = np.zeros(5)
+print(A, type(A))
+
+'criando um vetor de 1's'
+A = np.ones(5)
+print(A)
+
+len(A)
+
+for i in range(len(A)):
+ print(i, A[i])
+ 
+'preenchendo um vetor atraves de loop'
+ B = np.zeros(10)
+ 
+ for i in range(1, len(B)):
+ B[i] = B[i-1]*2
+ print(i)
+ 
+ print(B)
+ 
+'criando uma funcao media'
+
+def media(vet):
+	n = len(vet)
+	soma = sum(B)
+	media = soma/n
+	return media
