@@ -1,0 +1,54 @@
+' Imprimir '
+print('Meu primeiro programa')
+
+'Multiplicacao'
+valor =  3 * 4
+
+'Exponenciacao'
+valor2 = 2**3 
+
+'retorna o resto da divisão'
+3%4
+
+'tipo da variavel'
+type(valor2)
+
+'transforma em inteiro'
+valor2 = int(valor2)
+
+valor3 = 2/3 
+print('variável valor3: ', '%0.2f' %  valor3)
+
+
+'Inputa um valor'
+varinput = input('Digite seu nome')
+
+'if simples - não compara numero de tipos diferentes'
+if varfla<y: print('maior')
+
+'if com outro operador'
+if varfla < y or varfla == y: print('menor ou igual') 
+else: print('maior')
+
+
+'if com outro operador'
+if varfla < y:     print('menor') 
+elifj varfla == y: print('igual') 
+else: print('maior')
+
+
+'programa para checar se o numero é par'
+check = input('digite o numero para checar se ele é par: ')
+check = int(check)
+check2 = check%2
+
+if check2 == 0: print('o número é par')
+else: print('o número é ímpar')
+
+
+'concatenacao'
+a = 'bom'
+b = ' dia'
+c = a + b
+print(c)
+
