@@ -1,0 +1,15 @@
+import pandas as pd
+
+def alert(c):
+  if c['used'] == 1.0:
+    return 'Full'
+  elif c['used'] == 0.0:
+    return 'Empty'
+  elif 0.0 < c['used'] < 1.0:
+    return 'Partial'
+  else:
+    return 'Undefined'
+
+df = pd.DataFrame(data={'portion':[1, 2, 3, 4], 'used':[1.0, 0.3, 0.0, 0.8]})
+
+df['alert'] = df.apply(alert, axis=1)
