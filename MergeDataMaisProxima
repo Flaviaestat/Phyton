@@ -1,0 +1,3 @@
+consolidado = pd.merge_asof(df_match, df_ranking,
+                          on='date',
+                          left_by='winner_id', right_by='player')
