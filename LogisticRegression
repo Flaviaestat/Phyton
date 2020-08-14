@@ -1,0 +1,18 @@
+# module imports
+from patsy import dmatrices
+import pandas as pd
+from sklearn.linear_model import LogisticRegression
+import statsmodels.discrete.discrete_model as sm
+
+# read in the data & create matrices
+df = pd.read_csv("http://www.ats.ucla.edu/stat/data/binary.csv")
+y, X = dmatrices('admit ~ gre + gpa + C(rank)', df, return_type = 'dataframe')
+
+# sklearn output
+model = LogisticRegression(fit_intercept = False, C = 1e9)
+mdl = model.fit(X, y)
+model.coef_
+
+# sm
+logit = sm.Logit(y, X)
+logit.fit().params
