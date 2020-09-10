@@ -1,0 +1,11 @@
+data = pd.melt(transactions.set_index('customerId')['products'].apply(pd.Series).reset_index(), 
+             id_vars=['customerId'],
+             value_name='products') \
+    .dropna().drop(['variable'], axis=1) \
+    .groupby(['customerId', 'products']) \
+    .agg({'products': 'count'}) \
+    .rename(columns={'products': 'purchase_count'}) \
+    .reset_index() \
+    .rename(columns={'products': 'productId'})
+    
+data['productId'] = data['productId'].astype(np.int64)
