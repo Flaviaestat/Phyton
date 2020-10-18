@@ -1,0 +1,2 @@
+df['Quantile_rank'] = pd.qcut(df['Score'], 4, 
+                               labels = False) 
