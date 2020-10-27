@@ -1,0 +1,3 @@
+new_header = data.iloc[0] #grab the first row for the header
+data = data[1:] #take the data less the header row
+data.columns = new_header #set the header row as the df header
