@@ -1,0 +1,37 @@
+%python
+
+#fora do loop
+resultsTotal = []
+
+
+for frente_loop in lista_frentes:
+  for kpi_loop in num_columns:
+
+#frente_loop = 'TOTAL'
+#kpi_loop = 'Transacoes90dias'
+
+    baseProjecaoFrente = baseProjecao[baseProjecao['Frente'] == frente_loop]
+    format = '%Y-%m-%d'
+    baseProjecaoFrente['DataRef'] = pd.to_datetime(baseProjecaoFrente['DataRef'], format=format)
+    baseProjecaoFrente = baseProjecaoFrente.set_index(pd.DatetimeIndex(baseProjecaoFrente['DataRef']))
+    ts = baseProjecaoFrente[kpi_loop]
+    model = sm.tsa.statespace.SARIMAX(ts.astype(float),
+                                    order=(0, 0, 1), #diferenciação não sazonal lag 1
+                                    seasonal_order=(1, 1, 0, 12), #autoregressivo e media movel lag 1 com sazonalidade 12 pontos
+                                     mle_regression = True,
+                                    enforce_stationarity=False,
+                                    enforce_invertibility=False)
+    model_fit = model.fit()
+    projecao = model_fit.forecast(steps=12)
+
+    results = pd.DataFrame(list(projecao), columns =['Projecao'])
+    results['Frente'] = frente_loop
+    results['KPI'] = kpi_loop
+    results['DataRef'] = max_ref
+    results['MesesHorizonte'] = list(range(len(results.index)))
+    results['MesesHorizonte'] = results['MesesHorizonte'] + 1
+    resultsTotal.append(results) 
+
+resultsTotal = pd.concat(resultsTotal, ignore_index=True)#axis=1
+#fora do loop
+resultsTotal.head()
