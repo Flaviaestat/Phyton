@@ -1,0 +1,32 @@
+
+query = "SELECT * FROM fl_estudo_timing_produtos_sample"
+pandas_dataframe = spark.sql(query).toPandas()
+fl_teste_python = pandas_dataframe[pandas_dataframe['prod_prim_transacao'] == 'GIFT_CASH_IN']
+
+spark_df = spark.createDataFrame(fl_teste_python)
+
+
+import pyspark.sql.functions
+from pyspark.sql.functions import col, lit
+from pyspark.sql.types import StructType, StructField, StringType,IntegerType
+
+spark_df.withColumn("aux", col('prod_prim_transacao') ).show()
+
+
+freq = spark_df \
+.where(col("prod_seg_transacao") == "PURCHASE_ACOM")\
+.groupBy("prod_prim_transacao")\
+.count()\
+.orderBy(col("count").desc())
+
+
+
+from pyspark.sql import functions as F
+
+spark_df\
+.withColumn("grupo", F.when( F.col("prod_prim_transacao") == "PURCHASE_ACOM",  "Americanas").otherwise(\
+                     F.when( F.col("prod_prim_transacao") == "PURCHASE_SUBA" , "Submarino").otherwise("OUTROS")))\
+.groupBy("grupo")\
+.count()\
+.orderBy(col("count").desc())\
+.show()
