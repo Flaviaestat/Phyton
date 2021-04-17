@@ -1,0 +1,27 @@
+#só na primeira vez
+git clone ​https://usuario@enderecoRemoto.com/repositorio.git​
+git clone git@bitbucket.org:flavia_costa_willbank/Codigos.git
+
+#mudar caminho para pasta git
+cd documentos/git/Codigos/
+git checkout master
+git pull origin master
+git status
+
+#mudar a branch
+#não fiz esse passo pq estou trabalhando na master 
+git checkout -b feature/my_new_job (escolha um nome relacionado ao seu job)
+git branch
+git status
+
+#retorna a pasta de trabalho
+#não fiz esse passo para subida dos códigos
+cd documentos/git/airflow-dags/
+git checkout feature/my_new_job ou hotfix/my_new_job
+git branch
+
+#coloquei os arquivos na pasta Codigos
+git status (confira se apareceu a pasta do seu novo job ou novos arquivos)
+git add .  ou git add nome_da_pasta/
+git status (confira se foi feito acrescimos)
+git commit -m "comentario"
