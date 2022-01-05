@@ -1,0 +1,289 @@
+import imp
+imp.reload(pf)
+
+
+---------------Biblioteca acessos------------------
+Acessa os bancos do redshift e athena, além do S3
+---------------------------------------------------
+Necessita instalação das bibliotecas:
+boto3
+io
+urllib
+sqlalchemy
+pyathena
+
+---------- Função read_from_s3 --------------
+
+Description-
+	Lê arquivos csv do bucket avista do S3 (Pag). É preciso ter as variáveis de ambiente: 
+    AWS_ACCESS_KEY_ID_PAG, AWS_SECRET_ACCESS_KEY_PAG
+	
+Parameters
+	key - caminho da pasta do S3 + nome do arquivo e extensão 
+	delim - delimitador do csv
+
+Exemplo
+import aux.acessos as ac
+path = 'data_science/team/Flavia/Volumetria_CRM.csv'
+delim = ';'
+df = ac.read_from_s3(path, delim)
+
+---------- Função df_athena --------------
+
+Description-
+	Conecta ao banco do athena, processando a query solicitada. É preciso ter as variáveis de ambiente: 
+    AWS_ACCESS_KEY_ID_WILL, AWS_SECRET_ACCESS_KEY_WILL
+	
+Parameters
+	usuario - usuário do athena 
+	query - string com a query desejada
+
+Exemplo
+import aux.acessos as ac
+usuario = 'flavia-costa'
+
+query = """
+
+select * from platform_curated_zone.authorization_will limit 5;
+
+"""
+
+df = ac.df_athena(usuario, query)
+
+
+---------- Função df_redshift --------------
+
+Description-
+	Conecta ao banco do redshift, processando a query solicitada. Uma tabela temporária é criada, salva no S3 e é feito um load para o pandas. É preciso ter as variáveis de ambiente: 
+    USER_REDSHIFT, SENHA_REDSHIFT
+	
+Parameters
+	usuario - usuário do athena 
+	query - string com a query desejada
+
+Exemplo
+import aux.acessos as ac
+usuario = 'flavia-costa'
+
+query = """
+
+select * from platform_curated_zone.authorization_will limit 5;
+
+"""
+
+df = ac.df_athena(usuario, query)
+
+---------- Função save_to_s3 --------------
+
+Description-
+	Salva um dataframe em um bucket do pag no S3. É preciso ter as variáveis de ambiente: 
+     AWS_ACCESS_KEY_ID_PAG, AWS_SECRET_ACCESS_KEY_PAG
+	
+Parameters
+	path - pasta dentro do bucket avista no S3
+	filename - nome do arquivo atribuído (com extensão)
+    df - dataframe que será exportado em csv
+    delim - delimitador do csv
+
+Exemplo
+import aux.acessos as ac
+
+filename = 'streaming_202109.csv'
+df= s3_pag
+path = 'marketing/bases_campanha/2021/'
+ac.save_to_s3(path, filename, df, delim = ';')   
+
+
+---------------Biblioteca aed------------------
+Contém funções de análise exploratória de dados 
+-----------------------------------------------
+Necessita instalação das bibliotecas:
+seaborn
+matplotlib
+
+---------- Função Find_correl --------------
+
+Description-
+	Encontra correlações entre variáveis categóricas permitindo um exame mais minucioso posterior.
+    Usa a correlação de spearman    
+     
+Parameters
+	df - dataframe com os dados a serem investigados
+	id_col - array com nome das colunas que deverão ser excluídas da análise (id's, dados contato, etc)
+    threshold - valor mínimo de correlação que deverá ser mostrado na saída da função
+
+Exemplo
+import aux.aed as ae
+
+id_col = ['conta_cartao', 'cpf', 'email']
+ae.Find_correl(df, id_col, 0.75) 
+
+---------- Função vi --------------
+
+Description-
+	Investiga todas as variáveis da base por uma variável de interesse, realizando médias e cruzamentos através de gráficos    
+     
+Parameters
+	df - dataframe com os dados a serem investigados
+	id_col - array com nome das colunas que deverão ser excluídas da análise (id's, dados contato, etc)
+    var_interesse - nome da coluna que representa a variável de interesse ou y
+
+Exemplo
+import aux.aed as ae
+
+id_col = ['conta_cartao', 'cpf', 'email']
+ae.vi(df, id_col, 'converteu') 
+
+
+---------- Função valid --------------
+
+Description-
+	Faz uma validação geral nas colunas da base: valores nulos, outliers, valores distintos, mínimo, máximo e percentis
+     
+Parameters
+	dataset - dataframe com os dados a serem investigados
+	id_columns - array com nome das colunas que deverão ser excluídas da análise (id's, dados contato, etc)
+
+Exemplo
+import aux.aed as ae
+
+id_col = ['conta_cartao', 'cpf', 'email']
+ae.valid(df, id_col) 
+
+---------- Função discretiza --------------
+
+Description-
+	Discretiza todas as variáveis numéricas de um dataframe
+     
+Parameters
+	dataset - dataframe com os dados a serem investigados
+	id_columns - array com nome das colunas que deverão ser excluídas da análise (id's, dados contato, etc)
+
+Exemplo
+import aux.aed as ae
+
+id_col = ['conta_cartao', 'cpf', 'email']
+df = ae.discretiza(df, id_col) 
+
+
+---------------Biblioteca perfil------------------
+Contém funções para auxiliar análises comparativas tipo antes e depois
+---------------------------------------------------
+
+---------- Função traz_info --------------
+
+Description-
+	Traz um conunto de dados de perfil dos clientes linkando pelo cpf. A saída é o dataframe, essa função não traz dados consolidados para permitir vários tipos de analise
+
+Parameters
+	usuario - nome do usuário do athena
+	df - Dataframe com a base de clientes para serem incluídos os dados. Precisa ter o cpf no dataframe.
+	campocpf - nome da coluna contendo o cpf
+
+
+Exemplo
+import aux.perfil as pf
+df = pf.traz_info('flavia-costa', df, 'nr_cpf')
+
+---------- Função agg_perfil_geral --------------
+
+Description-
+	Faz uma agregação com contagem. Util para alimentar planilhas ou para gerar os gráficos e tabelas dinâmicas por outras ferramentas
+
+Parameters
+	df - Dataframe a ser agregado
+
+Exemplo
+import aux.perfil as pf
+df_agg = pf.agg_perfil_geral(df)
+
+---------- Função agg_perfil_grupos --------------
+
+Description-
+	Faz uma agregação com contagem. Util para alimentar planilhas ou para gerar os gráficos e tabelas dinâmicas por outras ferramentas.
+    A diferença entre a função anterior é que essa inclui uma variável de interesse ou grupo para ser incluído na agregação
+
+Parameters
+	df - Dataframe a ser agregado
+    campogrupo - nome da variável de grupo
+
+Exemplo
+import aux.perfil as pf
+df_agg = pf.agg_perfil_grupos(df, 'cluster')
+
+---------- Função grafico_perfil --------------
+
+Description-
+	Gera gráficos de todas as variáveis de perfil 
+
+Parameters
+	df - Dataframe a ser agregado
+
+Exemplo
+import aux.perfil as pf
+pf.grafico_perfil(df)
+
+---------- Função grafico_perfil_grupos --------------
+
+Description-
+	Gera gráficos de perfis realizando um cruzamento com alguma variável de interesse (grupos) com o objetivo de diferenciar o perfil dentre vários grupos
+
+Parameters
+	df - Dataframe a ser analisado
+    campogrupo - nome da variável de grupo
+
+Exemplo
+import aux.perfil as pf
+pf.grafico_perfil_grupos(df, 'cluster')
+
+
+---------- Função graf_catplot --------------
+
+Description-
+	Gera gráficos de perfis realizando um cruzamento com alguma variável de interesse (grupos) com o objetivo de diferenciar o perfil dentre vários grupos. Usa gráficos diferentes da função acima.
+
+Parameters
+	df - Dataframe a ser analisado
+    campogrupo - nome da variável de grupo
+
+Exemplo
+import aux.perfil as pf
+pf.graf_catplot(df, 'cluster')
+
+
+---------- Função report_perfil_grupos --------------
+
+Description-
+	Gera lifts de percentual de clientes em subsegmentos em relação ao grupo estudado. Ex.: Trabalhamos com um grupos de 3 clusters e verificamos que temos 20% de clientes no cluster 1 porém dentro do universo de mulheres até 20 anos da BA esse percentual chega a 30%. Isso levanta hipóteses de propensão de grupos específicos a esses grupos.
+
+Parameters
+	df - Dataframe a ser analisado
+    campogrupo - nome da variável de grupo
+    coluna_contagem - a coluna que contém a contagem de clientes. Caso não se esteja trabalhando numa base agregada é preciso criar uma coluna com valor fixo de 1
+    dif_var - diferença mínima entre o comportamento do grupo total e do subsegmento. No exemplo dado acima a diferença é de 10%
+    n_var - tamanho mínimo do subsegmento para que seja considerado no relatório
+
+Exemplo
+import aux.perfil as pf
+pf.report_perfil_grupos(df, 'cluster', 'num_clientes', 0.05, 100)
+
+
+---------------Biblioteca prepost------------------
+Contém funções para auxiliar análises comparativas tipo antes e depois
+---------------------------------------------------
+
+---------- Função stats --------------
+
+Description-
+	Gera estatísticas gerais de uma análise pre post como gráficos, estatísticas gerais e o teste t pareado
+	Esse teste compara valores de individuos e para isso são necessárias que as métricas estejam em colunas representando o período antes e depois
+
+Parameters
+	df - Dataframe contendo as colunas de comparação
+	col1 - nome da coluna com o valor antes
+	col2 - nome da coluna com o valor depois
+
+
+Exemplo
+import aux.prepost as pp
+pp.stats(base, 'transacoes_antes', 'transacoes_depois')
