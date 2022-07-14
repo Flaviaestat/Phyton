@@ -1,0 +1,128 @@
+def cluster_kmodes_label(row):
+    ### Mulher, Casada, 25 anos ou mais, cidade Pequena do Nordeste, renda declarada inferior a R$ 1K ou Não declarada
+    if row['ds_gender'] == 'FEMALE'
+    and row['ds_marital_status'] == 'MARRIED'
+    and row['ds_idade'] >= 25
+    and row['ds_city_size'] == 'pequeno'
+    and row['ds_region'] == 'Nordeste'
+    and (row['renda_declarada'] >= 0 and row['renda_declarada'] < 1000):
+        return '0'
+    ### Mulher, Solteira, Até 24 anos, cidade Média do Sudeste, renda declarada maior ou igual a R$ 1K
+    elif row['ds_gender'] == 'FEMALE'
+    and row['ds_marital_status'] == 'SINGLE'
+    and row['ds_idade'] <= 24
+    and row['ds_city_size'] == 'medio'
+    and row['ds_region'] == 'Sudeste'
+    and row['renda_declarada'] >= 1000:
+        return '1'
+    ### Mulher, Solteira, 35 anos ou mais, cidade Grande, Capital, do Nordeste, renda declarada maior ou igual a R$ 1K
+    elif row['ds_gender'] == 'FEMALE'
+    and row['ds_marital_status'] == 'SINGLE'
+    and row['ds_idade'] >= 35
+    and row['ds_city_size'] == 'grande'
+    and row['ds_region'] == 'Nordeste'
+    and row['is_capital'] == True
+    and row['renda_declarada'] >= 1000:
+        return '2'
+    ### Mulher, Solteira, 35 anos ou mais, cidade Média do Sul, renda declarada maior ou igual a R$ 2K, ensino até o superior ou pós-graduação
+    elif row['ds_gender'] == 'FEMALE'
+    and row['ds_marital_status'] == 'SINGLE'
+    and row['ds_idade'] >= 35
+    and row['ds_city_size'] == 'medio'
+    and row['ds_region'] == 'Sul'
+    and row['renda_declarada'] >= 2000
+    and row['ds_schooling'].isin(['INCOMPLETE_HIGHER_EDUCATION','COMPLETE_HIGHER_EDUCATION','INCOMPLETE_POST_GRADUATE','INCOMPLETE_MASTER','INCOMPLETE_DOCTORATE','COMPLETE_POST_GRADUATE','COMPLETE_MASTER','COMPLETE_DOCTORATE']):
+        return '3'
+    ### Homem, Solteiro, Até 24 anos, cidade Grande, Capital, do Norte ou Centro-Oeste, renda declarada maior ou igual a R$ 1K
+    elif row['ds_gender'] == 'MALE'
+    and row['ds_marital_status'] == 'SINGLE'
+    and row['ds_idade'] <= 24
+    and row['ds_city_size'] == 'grande'
+    and (row['ds_region'] == 'Norte' or row['ds_region'] == 'Centro-Oeste')
+    and row['is_capital'] == True
+    and row['renda_declarada'] >= 1000:
+        return '4'    
+    ### Mulher, Casada, 25 anos ou mais, cidade Grande, Capital, do Sudeste, renda declarada tanto inf. a R$1K ou não declarada, quanto maior que R$3K
+    elif row['ds_gender'] == 'FEMALE'
+    and row['ds_marital_status'] == 'MARRIED'
+    and row['ds_idade'] >= 25
+    and row['ds_city_size'] == 'grande'
+    and row['ds_region'] == 'Sudeste'
+    and row['is_capital'] == True
+    and (row['renda_declarada'] >= 0 and row['renda_declarada'] < 1000) or (row['renda_declarada'] >= 3000):
+        return '5'
+    ### Homem, Solteiro, Entre 25 e 34 anos, cidade Média do Nordeste, renda declarada inferior a R$ 1K ou Não declarada ensino cursando superior, completo ou pós-graduação
+    elif row['ds_gender'] == 'MALE'
+    and row['ds_marital_status'] == 'SINGLE'
+    and (row['ds_idade'] >= 25 and row['ds_idade'] <= 34)
+    and row['ds_city_size'] == 'medio'
+    and row['ds_region'] == 'Nordeste'
+    and (row['renda_declarada'] >= 0 and row['renda_declarada'] < 1000)
+    and row['ds_schooling'].isin(['INCOMPLETE_HIGHER_EDUCATION','COMPLETE_HIGHER_EDUCATION','INCOMPLETE_POST_GRADUATE','INCOMPLETE_MASTER','INCOMPLETE_DOCTORATE','COMPLETE_POST_GRADUATE','COMPLETE_MASTER','COMPLETE_DOCTORATE']):
+        return '6'
+    ### Homem, Solteiro, 25 anos ou mais, cidade Pequena do Nordeste, renda declarada maior ou igual a R$ 1K ensino fundamental
+    elif row['ds_gender'] == 'MALE'
+    and row['ds_marital_status'] == 'SINGLE'
+    and row['ds_idade'] >= 25
+    and row['ds_city_size'] == 'pequeno'
+    and row['ds_region'] == 'Nordeste'
+    and row['renda_declarada'] >= 1000
+    and row['ds_schooling'].isin(['INCOMPLETE_ELEMENTARY','COMPLETE_ELEMENTARY']):
+        return '7'
+    ### Mulher, Solteira, Até 24 anos, cidade Pequena do , renda declarada inferior a R$ 1K ou Não declarada
+    elif row['ds_gender'] == 'FEMALE'
+    and row['ds_marital_status'] == 'SINGLE'
+    and row['ds_idade'] <= 24
+    and row['ds_city_size'] == 'pequeno'
+    #and row['ds_region'] == 'Sudeste'
+    and (row['renda_declarada'] >= 0 and row['renda_declarada'] < 1000):
+        return '8'
+    ### Homem, Solteiro, Entre 25 e 34 anos, cidade Média do Norte, renda declarada maior ou igual a R$ 1K
+    elif row['ds_gender'] == 'MALE'
+    and row['ds_marital_status'] == 'SINGLE'
+    and (row['ds_idade'] >= 25 and row['ds_idade'] <= 34)
+    and row['ds_city_size'] == 'medio'
+    and row['ds_region'] == 'Norte'
+    and row['renda_declarada'] >= 1000:
+        return '9'
+    ### Mulher, Solteira, Até 24 anos, cidade Pequena do Nordeste, renda declarada R$ 1-2K
+    elif row['ds_gender'] == 'FEMALE'
+    and row['ds_marital_status'] == 'SINGLE'
+    and row['ds_idade'] <= 24
+    and row['ds_city_size'] == 'pequeno'
+    and row['ds_region'] == 'Nordeste'
+    and (row['renda_declarada'] >= 1000 and row['renda_declarada'] < 2000):
+        return '10'
+    ### Homem, Solteiro, Até 24 anos, cidade Pequena do Nordeste, renda declarada inferior a R$ 1K ou Não declarada
+    elif row['ds_gender'] == 'MALE'
+    and row['ds_marital_status'] == 'SINGLE'
+    and row['ds_idade'] <= 24
+    and row['ds_city_size'] == 'pequeno'
+    and row['ds_region'] == 'Nordeste'
+    and (row['renda_declarada'] >= 0 and row['renda_declarada'] < 1000):
+        return '11'
+    ### Mulher, Solteira, 35 anos ou mais, cidade Pequena do Nordeste, renda declarada R$ 1-2K ensino fundamental
+    elif row['ds_gender'] == 'FEMALE'
+    and row['ds_marital_status'] == 'SINGLE'
+    and row['ds_idade'] >= 35
+    and row['ds_city_size'] == 'pequeno'
+    and row['ds_region'] == 'Nordeste'
+    and (row['renda_declarada'] >= 1000 and row['renda_declarada'] < 2000)
+    and row['ds_schooling'].isin(['INCOMPLETE_ELEMENTARY','COMPLETE_ELEMENTARY']):
+        return '12'
+    ### Homem, Solteiro, 25 anos ou mais, cidade Média do Centro-Oeste, renda declarada tanto inf. a R$1K ou não declarada, quanto maior que R$3K
+    elif row['ds_gender'] == 'MALE'
+    and row['ds_marital_status'] == 'SINGLE'
+    and row['ds_idade'] >= 25
+    and row['ds_city_size'] == 'medio'
+    and row['ds_region'] == 'Centro-Oeste'
+    and (row['renda_declarada'] >= 0 and row['renda_declarada'] < 1000) or (row['renda_declarada'] >= 3000):
+        return '13'
+    ### Homem, Casado, 35 anos ou mais, cidade Pequena do , renda declarada maior ou igual a R$ 2K
+    elif row['ds_gender'] == 'MALE'
+    and row['ds_marital_status'] == 'MARRIED'
+    and row['ds_idade'] >= 35
+    and row['ds_city_size'] == 'pequeno'
+    #and row['ds_region'] == 'Nordeste'
+    and row['renda_declarada'] >= 2000
+        return '14'
