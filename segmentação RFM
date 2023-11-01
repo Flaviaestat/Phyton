@@ -1,0 +1,107 @@
+# Create analysis date for Recency metric
+invoice_date = df["InvoiceDate"].max() 
+
+today_date= dt.datetime(2010, 12, 11)
+
+# Create RFM data frame with groupby, use lambda functions for calculating Recency, Frequency, and Monetary metrics
+rfm_df = df.groupby("Customer ID").agg({'InvoiceDate': lambda date: (today_date - date.max()).days,
+                                        "Invoice": lambda invoice: invoice.nunique(),
+                                        "TotalPrice": lambda totalp: totalp.sum()})
+
+# Rename columns for appropriate use
+
+rfm_df.columns = ["recency", "frequency", "monetary"]
+
+
+rfm_df["monetary_score"] = pd.qcut(rfm_df["monetary"], 5, labels=[1, 2, 3, 4, 5])
+rfm_df["frequency_score"] = pd.qcut(rfm_df["frequency"].rank(method="first"), 5, labels=[1, 2, 3, 4, 5])
+rfm_df["recency_score"] = pd.qcut(rfm_df["recency"], 5, labels=[5, 4, 3, 2, 1])
+
+rfm_df["RFM_SCORE"] = (rfm_df["recency_score"].astype(str) + rfm_df["frequency_score"].astype(str))
+
+seg_map = {
+    r'[1-2][1-2]': 'hibernating',
+    r'[1-2][3-4]': 'at_Risk',
+    r'[1-2]5': 'cant_loose',
+    r'3[1-2]': 'about_to_sleep',
+    r'33': 'need_attention',
+    r'[3-4][4-5]': 'loyal_customers',
+    r'41': 'promising',
+    r'51': 'new_customers',
+    r'[4-5][2-3]': 'potential_loyalists',
+    r'5[4-5]': 'champions'
+
+rfm_df['segment'] = rfm_df['RFM_SCORE'].replace(seg_map, regex=True)
+
+df["Total_Price"] = df["Quantity"] * df["UnitPrice"]
+
+# Create cltv_df with the total price, total transaction, and total unit for calculation
+
+cltv_df = df.groupby("CustomerID").agg({"InvoiceNo": lambda x: x.nunique(),
+                             "Quantity": "sum",
+                             "Total_Price": "sum"})
+
+
+
+# Rename columns for CLTV calculation
+
+cltv_df.columns = ["Total_Transaction", "Total_Unit", "Total_Price"]
+
+
+# Calculate the average order value
+
+cltv_df["Average_Order_Value"] = cltv_df["Total_Price"] / cltv_df["Total_Transaction"]
+
+# Calculate purchase frequency
+
+cltv_df["Purchase_Frequency"] = cltv_df["Total_Transaction"] / cltv_df.shape[0]
+
+# Calculate customer value
+
+cltv_df["CV"] = cltv_df["Average_Order_Value"] * cltv_df["Purchase_Frequency"]
+
+# Calculate churn rate
+
+Repeat_Rate = cltv_df[cltv_df["Total_Transaction"] > 1].shape[0] / cltv_df.shape[0]
+
+Churn_Rate = 1 - Repeat_Rate #calcula o abando após a primeira transacao
+
+# Calculate profit margin
+
+cltv_df["Profit_Margin"] = cltv_df["Total_Price"] * 0.10
+
+# Calculate the customer lifetime value
+
+cltv_df["CLTV"] = (cltv_df["CV"] / Churn_Rate) * cltv_df["Profit_Margin"]
+
+
+# Segmentation based on CLTV
+
+cltv_df["segments"] = pd.qcut(cltv_df["CLTV"], 5, labels= ["D", "C", "B", "A", "S"])
+
+# Descriptive stats for segments
+
+cltv_df.groupby("segments").agg({"count", "mean", "sum"})
+
+
+# Radar chart
+
+r_segment_stats = cltv_df.groupby("segments")[["Average_Order_Value", "Total_Transaction", "Profit_Margin"]].mean()
+
+# Normalize the data
+segment_stats_normalized = (r_segment_stats - r_segment_stats.min()) / (r_segment_stats.max() - r_segment_stats.min())
+
+
+# Create a radar chart to visualize the statistics by segments
+angles = np.linspace(0, 2 * np.pi, len(r_segment_stats.columns), endpoint=False).tolist()
+angles += angles[:1]  # Close the plot
+plt.figure(figsize=(8, 8))
+for segment in segment_stats_normalized.index:
+    values = segment_stats_normalized.loc[segment].tolist()
+    values += values[:1]  # Close the plot
+    plt.polar(angles, values, marker='o', label=segment)
+plt.xticks(angles[:-1], r_segment_stats.columns)
+plt.yticks([0.25, 0.5, 0.75, 1.0])
+plt.title('Segment Comparison')
+plt.legend(title='Segments')
+plt.show()
